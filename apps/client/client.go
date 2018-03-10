@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"p2p/proto"
 	"time"
+
+	"github.com/jinhao/p2pDemo/proto"
 )
 
 func doLogin(conn *net.UDPConn, serverAddr *net.UDPAddr) error {
@@ -49,6 +50,7 @@ func sendConeReq(conn *net.UDPConn, serverAddr *net.UDPAddr, coneAddr string) er
 	return nil
 }
 
+// WriteData .
 func WriteData(conn *net.UDPConn, data []byte, serverAddr *net.UDPAddr) error {
 	_, err := conn.WriteToUDP(data, serverAddr)
 	if err != nil {
@@ -57,6 +59,7 @@ func WriteData(conn *net.UDPConn, data []byte, serverAddr *net.UDPAddr) error {
 	return err
 }
 
+// ReadData .
 func ReadData(conn *net.UDPConn) error {
 	for {
 		data := make([]byte, 1024)
@@ -68,7 +71,7 @@ func ReadData(conn *net.UDPConn) error {
 		p := proto.Proto{}
 		err = json.Unmarshal(data[:n], &p)
 		if err != nil {
-			log.Print("json Unmarshal err:%s", err)
+			log.Printf("json Unmarshal err:%s", err)
 		}
 
 		log.Printf("read data, remote addr:%s %d", addr, p.Cmd)
@@ -90,11 +93,10 @@ func ReadData(conn *net.UDPConn) error {
 		}
 	}
 
-	return nil
 }
 
-func doCone(localUdpConn *net.UDPConn, addr string) error {
-	remoteUdpAddr, err := net.ResolveUDPAddr("udp4", addr)
+func doCone(localUDPConn *net.UDPConn, addr string) error {
+	remoteUDPAddr, err := net.ResolveUDPAddr("udp4", addr)
 	if err != nil {
 		log.Printf("doCone | ResolveUDPAddr err:%s\n", err.Error())
 		return err
@@ -102,11 +104,10 @@ func doCone(localUdpConn *net.UDPConn, addr string) error {
 	for {
 		p := proto.Proto{}
 		p.Cmd = proto.CMD_MSG
-		p.Data = fmt.Sprintf("hello, I am %s", localUdpConn.LocalAddr().String())
+		p.Data = fmt.Sprintf("hello, I am %s", localUDPConn.LocalAddr().String())
 		msg, _ := json.Marshal(&p)
-		localUdpConn.WriteToUDP(msg, remoteUdpAddr)
+		localUDPConn.WriteToUDP(msg, remoteUDPAddr)
 		time.Sleep(5 * time.Second)
 	}
 
-	return nil
 }

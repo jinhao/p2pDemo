@@ -7,12 +7,13 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"p2p/proto"
+
+	"github.com/jinhao/p2pDemo/proto"
 )
 
 var clientList *list.List
 var clientMap map[string]*list.Element
-var serverAddr = flag.String("addr", ":8080")
+var serverAddr = flag.String("addr", ":8080", "ip:port")
 
 func main() {
 	flag.Parse()
@@ -57,17 +58,18 @@ func main() {
 		case proto.CMD_LIST:
 			p := GetClients()
 			p.Cmd = proto.CMD_LIST
-			p_data, err := json.Marshal(p)
+			pData, err := json.Marshal(p)
 			if err != nil {
 				log.Print("json Marshal:", err)
 			}
-			sk.WriteToUDP(p_data, addr)
+			sk.WriteToUDP(pData, addr)
 		case proto.CMD_CONE:
 			doCone(sk, p, addr.String())
 		}
 	}
 }
 
+// Login register to server
 func Login(addr string) {
 	log.Print("Login")
 	// 判断client列表中是否有该客户端
@@ -79,12 +81,13 @@ func Login(addr string) {
 	}
 }
 
+// Logout  .
 func Logout(addr string) {
 	log.Print("Logout")
 	e, ok := clientMap[addr]
 	if ok {
 		v := clientList.Remove(e)
-		log.Print("Logout | %v", v)
+		log.Printf("Logout | %v", v)
 		delete(clientMap, addr)
 	}
 }
@@ -94,15 +97,16 @@ func doCone(conn *net.UDPConn, p proto.Proto, fromAddr string) {
 	coneAddr := p.ConeAddr
 	p.Cmd = proto.CMD_CONE
 	p.ConeAddr = fromAddr
-	p_data, err := json.Marshal(p)
+	pData, err := json.Marshal(p)
 	if err != nil {
 		log.Print("json Marshal:", err)
 	}
-	coneAddrUdp, _ := net.ResolveUDPAddr("udp4", coneAddr)
-	conn.WriteToUDP(p_data, coneAddrUdp)
+	coneAddrUDP, _ := net.ResolveUDPAddr("udp4", coneAddr)
+	conn.WriteToUDP(pData, coneAddrUDP)
 
 }
 
+// GetClients get all register clients and save in a list
 func GetClients() proto.Proto {
 	log.Print("GetClients")
 	p := proto.Proto{}
