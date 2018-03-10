@@ -54,3 +54,9 @@ Server:
 		2018/03/09 15:21:32 read data, remote addr:60.168.222.164:8001 5
 		2018/03/09 15:21:32 recv msg:hello, I am 0.0.0.0:8001
 		2018/03/09 15:21:37 read data, remote addr:60.168.222.164:8001 5
+
+
+# P2P相关资料
+
+1. [http://blog.easemob.com/?p=49](http://blog.easemob.com/?p=49)
+2. [https://www.zhihu.com/question/30269820](https://www.zhihu.com/question/30269820)
